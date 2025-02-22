@@ -1,18 +1,19 @@
 import mongoose, { Schema, Document } from "mongoose";
-import Supplier from "./Supplier";
 
-interface Product extends Document {
+interface IProduct extends Document {
   name: string;
-  price: number;
-  quantity: number;
+  sku: number;
+  description: string;
   supplier: mongoose.Types.ObjectId;
+  manufactoringDate: Date;
 }
 
 const ProductSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
-    price: { type: Number, required: true },
-    quantity: { type: Number, required: true },
+    sku: { type: Number, required: true },
+    description: { type: String, required: true },
+    manufactoringDate: { type: Schema.Types.Date, required: true },
     supplier: { type: Schema.Types.ObjectId, ref: "Supplier", required: true },
   },
   {
@@ -20,6 +21,6 @@ const ProductSchema: Schema = new Schema(
   }
 );
 
-const Product = mongoose.model<Product>("Product", ProductSchema);
+const Product = mongoose.model<IProduct>("Product", ProductSchema);
 
 export default Product;

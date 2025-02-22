@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface Supplier extends Document {
+export interface ISupplier extends Document {
   name: string;
   country: string;
   products: mongoose.Types.ObjectId[];
@@ -17,6 +17,6 @@ const SupplierSchema: Schema = new Schema(
   }
 );
 
-const Supplier = mongoose.model<Supplier>("Supplier", SupplierSchema);
+const Supplier = mongoose.model<ISupplier>("Supplier", SupplierSchema);
 
 export default Supplier;
