@@ -1,9 +1,13 @@
 import "./config/env";
+import "./models";
+
 import express from "express";
-import connectDB from "./config/db";
 import cors from "cors";
 
-console.log("✅ Server is starting...");
+import connectDB from "./config/db";
+import routes from "./routes";
+
+console.log("Server is starting...");
 
 const app = express();
 
@@ -12,10 +16,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5555;
 
-app.get("/", (req, res) => {
-  res.send("Hello");
-});
+app.use("/api", routes);
 
 connectDB().then(() => {
-  app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
