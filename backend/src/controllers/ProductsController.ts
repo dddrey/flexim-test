@@ -2,6 +2,100 @@ import { Request, Response } from "express";
 import { Product } from "../models/Product";
 import { validationResult } from "express-validator";
 
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     summary: Retrieve a list of products
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of products per page
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: sort
+ *         required: false
+ *         description: Field to sort by
+ *         schema:
+ *           type: string
+ *           default: name
+ *       - in: query
+ *         name: order
+ *         required: false
+ *         description: Sort order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *       - in: query
+ *         name: search
+ *         required: false
+ *         description: Search term
+ *         schema:
+ *           type: string
+ *           default: ""
+ *     responses:
+ *       200:
+ *         description: A list of products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 100
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 limit:
+ *                   type: integer
+ *                   example: 10
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 10
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       sku:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       manufactoringDate:
+ *                         type: string
+ *                       supplier:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *                           address:
+ *                             type: string
+ * 
+ *       404:
+ *         description: No products found
+ *       400:
+ *         description: Invalid query parameters
+ *       500:
+ *         description: Server error
+ */
 export const getProducts = async (
   req: Request,
   res: Response
