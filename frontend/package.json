@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate:api": "set -o allexport; source .env.local; set +o allexport; npx @rtk-query/codegen-openapi openapi-config.cjs"
+    "codegen": "set -o allexport; source .env.local; set +o allexport; npx @rtk-query/codegen-openapi openapi-config.cjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
