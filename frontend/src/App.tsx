@@ -1,10 +1,14 @@
+import { Route, Routes } from "react-router-dom";
 import ProductTable from "./components/ProductTable";
+import Layout from "./components/Layout";
 
 function App() {
   return (
-    <div className="p-8 m-auto max-w-7xl">
-      <ProductTable />
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<ProductTable />} />
+      </Route>
+    </Routes>
   );
 }
 

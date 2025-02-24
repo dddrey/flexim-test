@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 
-import { IProduct } from "../types";
-import { fetchProducts } from "../services/api";
+import { IProduct } from "@/types";
+import { fetchProducts } from "@/services/api";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -15,14 +16,33 @@ import { Pagination } from "@/components/ui/pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 
 const ProductTable = () => {
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 300);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [sortBy, setSortBy] = useState<keyof IProduct | "supplier.name">(
-    "name"
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialSearch = searchParams.get("search") || "";
+  const initialPage = Number(searchParams.get("page")) || 1;
+  const initialLimit = Number(searchParams.get("limit")) || 10;
+  const initialSortBy = searchParams.get("sortBy") || "name";
+  const initialSortOrder = searchParams.get("sortOrder") || "asc";
+
+  const [search, setSearch] = useState(initialSearch);
+  const [page, setPage] = useState(initialPage);
+  const [limit, setLimit] = useState(initialLimit);
+  const [sortBy, setSortBy] = useState(initialSortBy);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+    initialSortOrder as "asc" | "desc"
   );
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  const debouncedSearch = useDebounce(search, 300);
+
+  useEffect(() => {
+    setSearchParams({
+      search: debouncedSearch,
+      page: String(page),
+      limit: String(limit),
+      sortBy,
+      sortOrder,
+    });
+  }, [debouncedSearch, page, limit, sortBy, sortOrder, setSearchParams]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: [
@@ -115,7 +135,7 @@ const ProductTable = () => {
 
       <Pagination
         currentPage={page}
-        totalPages={Math.ceil(data?.total / limit)}
+        totalPages={Math.ceil((data?.total || 0) / limit)}
         limit={limit}
         onPageChange={(pageNum) => setPage(pageNum)}
         onLimitChange={(newLimit) => {
