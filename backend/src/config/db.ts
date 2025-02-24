@@ -13,4 +13,11 @@ const connectDB = async () => {
   }
 };
 
+process.on("SIGINT", async () => {
+  console.log("Application is shutting down. Closing MongoDB connection...");
+  await mongoose.disconnect();
+  console.log("MongoDB disconnected. Exiting process.");
+  process.exit(0);
+});
+
 export default connectDB;

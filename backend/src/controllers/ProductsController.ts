@@ -122,7 +122,7 @@ export const getProducts = async (
       sortField = { [sort]: order === "desc" ? -1 : 1 };
     }
 
-    const products = await Product.aggregate([
+    const [result] = await Product.aggregate([
       {
         $lookup: {
           from: "suppliers",
@@ -131,48 +131,43 @@ export const getProducts = async (
           as: "supplierData",
         },
       },
-      { $unwind: "$supplierData" },
       { $match: matchQuery },
-      { $sort: sortField },
-      { $skip: skip },
-      { $limit: pageSize },
       {
-        $project: {
-          _id: 1,
-          name: 1,
-          sku: 1,
-          description: 1,
-          manufactoringDate: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          supplier: {
-            _id: "$supplierData._id",
-            name: "$supplierData.name",
-            address: "$supplierData.address",
-          },
+        $facet: {
+          metadata: [{ $count: "total" }],
+          products: [
+            { $sort: sortField },
+            { $skip: skip },
+            { $limit: pageSize },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                sku: 1,
+                description: 1,
+                manufactoringDate: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                supplier: {
+                  _id: "$supplierData._id",
+                  name: "$supplierData.name",
+                  address: "$supplierData.address",
+                },
+              },
+            },
+          ],
         },
       },
     ]);
 
-    const totalProducts = await Product.aggregate([
-      {
-        $lookup: {
-          from: "suppliers",
-          localField: "supplier",
-          foreignField: "_id",
-          as: "supplierData",
-        },
-      },
-      { $unwind: "$supplierData" },
-      { $match: matchQuery },
-      { $count: "total" },
-    ]);
+    const products = result.products;
+    const total = result.metadata.length > 0 ? result.metadata[0].total : 0;
 
     res.status(200).json({
-      total: totalProducts[0]?.total || 0,
+      total: total,
       page: pageNumber,
       limit: pageSize,
-      totalPages: Math.ceil((totalProducts[0]?.total || 0) / pageSize),
+      totalPages: Math.ceil(total / pageSize),
       products,
     });
   } catch (error) {
