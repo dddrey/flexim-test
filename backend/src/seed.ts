@@ -49,6 +49,9 @@ const seedDatabase = async () => {
     }
 
     console.log("Seeds executed successfully");
+
+    await mongoose.disconnect();
+    console.log("MongoDB disconnected. Exiting process.");
     process.exit(0);
   } catch (error) {
     console.error("Error during database seeding:", error);
