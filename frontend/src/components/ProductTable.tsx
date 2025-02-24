@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 
-import { IProduct } from "@/types";
-import { fetchProducts } from "@/services/api";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -14,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Product, useGetProductsQuery } from "@/store/generatedApi";
 
 const ProductTable = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,28 +42,21 @@ const ProductTable = () => {
     });
   }, [debouncedSearch, page, limit, sortBy, sortOrder, setSearchParams]);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: [
-      "products",
-      { search: debouncedSearch, page, limit, sortBy, sortOrder },
-    ],
-    queryFn: () =>
-      fetchProducts({
-        search: debouncedSearch,
-        page,
-        limit,
-        sort: sortBy,
-        order: sortOrder,
-      }),
+  const { data, isLoading, isError } = useGetProductsQuery({
+    search: debouncedSearch,
+    page,
+    limit,
+    sort: sortBy,
+    order: sortOrder,
   });
-
-  const handleSort = (field: keyof IProduct | "supplier.name") => {
-    setSortBy(field);
-    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-  };
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching products</div>;
+
+  const handleSort = (field: keyof Product | "supplier.name") => {
+    setSortBy(field);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
 
   return (
     <div className="space-y-4">
@@ -119,7 +110,7 @@ const ProductTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data?.products?.map((product: IProduct) => (
+          {data?.products?.map((product) => (
             <TableRow key={product._id}>
               <TableCell>{product.name}</TableCell>
               <TableCell>{product.sku}</TableCell>
