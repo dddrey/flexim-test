@@ -67,28 +67,7 @@ import { validationResult } from "express-validator";
  *                 products:
  *                   type: array
  *                   items:
- *                     type: object
- *                     properties:
- *                       _id:
- *                         type: string
- *                       name:
- *                         type: string
- *                       sku:
- *                         type: string
- *                       description:
- *                         type: string
- *                       manufactoringDate:
- *                         type: string
- *                       supplier:
- *                         type: object
- *                         properties:
- *                           _id:
- *                             type: string
- *                           name:
- *                             type: string
- *                           address:
- *                             type: string
- * 
+ *                     $ref: '#/components/schemas/Product'
  *       404:
  *         description: No products found
  *       400:
@@ -128,9 +107,11 @@ export const getProducts = async (
     const matchQuery: any = {};
     if (search) {
       matchQuery.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { sku: { $regex: search, $options: "i" } },
-        { "supplierData.name": { $regex: search, $options: "i" } },
+        { name: { $regex: search.toLowerCase(), $options: "i" } },
+        { sku: { $regex: search.toLowerCase(), $options: "i" } },
+        {
+          "supplierData.name": { $regex: search.toLowerCase(), $options: "i" },
+        },
       ];
     }
 

@@ -15,7 +15,7 @@ const options: swaggerJsdoc.Options = {
       },
     ],
   },
-  apis: ["./src/controllers/*.ts"],
+  apis: ["./src/controllers/*.ts", "./src/models/*.ts"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

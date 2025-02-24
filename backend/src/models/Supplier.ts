@@ -1,5 +1,23 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Supplier:
+ *       type: object 
+ *       required:
+ *         - _id
+ *         - name
+ *         - country
+ *       properties:
+ *         _id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         country:
+ *           type: string
+ */
 export interface ISupplier extends Document {
   name: string;
   country: string;
